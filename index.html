@@ -3,80 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
+    <title>TaskFlow - Productivity App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <h1>Task Manager</h1>
-                <p class="subtitle">Stay organized and productive</p>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">TaskFlow</span>
+                </div>
+                <button class="sidebar-close" aria-label="Close sidebar">
+                    <span>&times;</span>
+                </button>
             </div>
-        </header>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="all">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">All Tasks</span>
+                </button>
+                <button class="nav-item" data-view="pinned">
+                    <span class="nav-icon">📌</span>
+                    <span class="nav-text">Pinned</span>
+                </button>
+                <button class="nav-item" data-view="pending">
+                    <span class="nav-icon">⏳</span>
+                    <span class="nav-text">Pending</span>
+                </button>
+                <button class="nav-item" data-view="completed">
+                    <span class="nav-icon">✓</span>
+                    <span class="nav-text">Completed</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Productivity Stats -->
+            <div class="productivity-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Completed Today</div>
+                    <div class="stat-value" id="todayCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Daily Streak</div>
+                    <div class="stat-value" id="streakCount">0</div>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Task Counters -->
+            <div class="task-stats">
+                <div class="stat">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="pendingCount">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="priorityCount">0</div>
+                    <div class="stat-label">Priority</div>
+                </div>
+            </div>
+
+            <!-- Theme Toggle & Actions -->
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="action-btn" id="focusBtn" title="Focus Mode">
+                    <span>🎯</span> Focus
+                </button>
+                <div class="import-export-group">
+                    <button class="action-btn" id="exportBtn" title="Export tasks">
+                        <span>💾</span>
+                    </button>
+                    <button class="action-btn" id="importBtn" title="Import tasks">
+                        <span>📂</span>
+                    </button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay"></div>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <!-- Input Section -->
-            <section class="input-section">
-                <form id="taskForm" class="task-form">
-                    <input
-                        type="text"
-                        id="taskInput"
-                        class="task-input"
-                        placeholder="Add a new task..."
-                        autocomplete="off"
-                    >
-                    <button type="submit" class="btn btn-add">Add Task</button>
-                </form>
-            </section>
+        <main class="main-container">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" aria-label="Toggle menu">
+                        <span class="hamburger"></span>
+                    </button>
+                    <div class="header-title-section">
+                        <h1 class="page-title">Tasks</h1>
+                        <p class="header-subtitle">Stay productive and organized</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="search-container">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            class="search-input"
+                            placeholder="Search tasks..."
+                            aria-label="Search tasks"
+                        >
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    <div class="task-counter">
+                        <span id="headerTaskCount">0</span>
+                        <span class="counter-label">left</span>
+                    </div>
+                </div>
+            </header>
 
-            <!-- Controls Section -->
-            <section class="controls-section">
-                <div class="filter-group">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="pending">Pending</button>
-                    <button class="filter-btn" data-filter="completed">Completed</button>
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Add Task Section -->
+                <div class="add-task-section">
+                    <form id="taskForm" class="task-form">
+                        <input
+                            type="text"
+                            id="taskInput"
+                            class="task-input"
+                            placeholder="Add a new task... (try: 'urgent: fix bug' or 'later: research')"
+                            autocomplete="off"
+                        >
+                        <button type="submit" class="btn-add">Add</button>
+                    </form>
                 </div>
-                <div class="task-counter">
-                    <span id="taskCount" class="counter-text">0</span>
-                    <span class="counter-label">tasks left</span>
-                </div>
-            </section>
 
-            <!-- Task List Section -->
-            <section class="tasks-section">
-                <div id="taskList" class="task-list">
-                    <!-- Tasks will be dynamically inserted here -->
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">All</button>
+                    <button class="filter-tab" data-filter="pending">Pending</button>
+                    <button class="filter-tab" data-filter="snoozed">Snoozed</button>
+                    <button class="filter-tab" data-filter="completed">Completed</button>
                 </div>
-                <div id="emptyState" class="empty-state">
-                    <p>No tasks yet. Add one to get started! 📝</p>
+
+                <!-- Task List -->
+                <div class="task-list-container">
+                    <div id="taskList" class="task-list">
+                        <!-- Tasks will be inserted here -->
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <h3>No tasks yet</h3>
+                        <p>Create your first task or search existing ones</p>
+                    </div>
                 </div>
-            </section>
+            </div>
         </main>
+    </div>
+
+    <!-- Focus Mode Modal -->
+    <div id="focusModal" class="modal modal-focus">
+        <div class="modal-overlay"></div>
+        <div class="modal-content focus-content">
+            <button class="modal-close" id="closeFocusModal">&times;</button>
+            <div class="focus-header">
+                <h2>Focus Mode</h2>
+                <p>One task, zero distractions</p>
+            </div>
+            <div id="focusTaskContainer" class="focus-task-container">
+                <!-- Focus task will be rendered here -->
+            </div>
+            <div class="focus-timer">
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button id="startTimerBtn" class="btn btn-small">Start</button>
+                    <button id="pauseTimerBtn" class="btn btn-small" style="display: none;">Pause</button>
+                    <button id="resetTimerBtn" class="btn btn-small">Reset</button>
+                </div>
+            </div>
+            <div class="focus-actions">
+                <button id="focusCompleteBtn" class="btn btn-primary">Mark Complete</button>
+                <button id="focusSkipBtn" class="btn btn-secondary">Skip Task</button>
+                <button id="exitFocusBtn" class="btn btn-secondary">Exit Focus</button>
+            </div>
+        </div>
     </div>
 
     <!-- Edit Modal -->
     <div id="editModal" class="modal">
+        <div class="modal-overlay"></div>
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Edit Task</h2>
                 <button class="modal-close" id="closeModal">&times;</button>
             </div>
             <form id="editForm" class="edit-form">
-                <input
-                    type="text"
-                    id="editInput"
-                    class="task-input"
-                    placeholder="Task description..."
-                    required
-                >
-                <div class="modal-buttons">
-                    <button type="submit" class="btn btn-save">Save Task</button>
-                    <button type="button" class="btn btn-cancel" id="cancelEdit">Cancel</button>
+                <div class="form-group">
+                    <label for="editInput">Task Description</label>
+                    <input
+                        type="text"
+                        id="editInput"
+                        class="edit-input"
+                        placeholder="Task description..."
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="prioritySelect">Priority</label>
+                    <select id="prioritySelect" class="priority-select">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Snooze Modal -->
+    <div id="snoozeModal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Snooze Task</h2>
+                <button class="modal-close" id="closeSnoozeModal">&times;</button>
+            </div>
+            <div class="snooze-form">
+                <div class="snooze-options">
+                    <button class="snooze-btn" data-minutes="5">5 min</button>
+                    <button class="snooze-btn" data-minutes="15">15 min</button>
+                    <button class="snooze-btn" data-minutes="30">30 min</button>
+                    <button class="snooze-btn" data-minutes="60">1 hour</button>
+                    <button class="snooze-btn" data-minutes="1440">Tomorrow</button>
+                </div>
+            </div>
         </div>
     </div>
 
